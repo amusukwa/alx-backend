@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-"""
-Deletion-resilient hypermedia pagination
-"""
-
+""" Module for Deletion-resilient hypermedia pagination """
 import csv
 from typing import List, Dict
 
@@ -20,10 +17,14 @@ class Server:
         """Cached dataset
         """
         if self.__dataset is None:
-            with open(self.DATA_FILE) as f:
-                reader = csv.reader(f)
-                dataset = [row for row in reader]
-            self.__dataset = dataset[1:]
+            try:
+                with open(self.DATA_FILE) as f:
+                    reader = csv.reader(f)
+                    dataset = [row for row in reader]
+                self.__dataset = dataset[1:]
+            except FileNotFoundError:
+                print(f"Error: File '{self.DATA_FILE}' not found.")
+                return []
 
         return self.__dataset
 
@@ -75,6 +76,15 @@ class Server:
             "data": [dataset[i] for i in range(index, end_index)]
         }
 
+    def get_hyper(self, page: int = 1, page_size: int = 10) -> Dict:
+        """Return hypermedia metadata for a given page and page size.
 
-if __name__ == "__main__":
-    server = Server()
+        Args:
+            page (int): The page number (1-indexed). Defaults to 1.
+            page_size (int): The number of items per page. Defaults to 10.
+
+        Returns:
+            Dict: Hypermedia metadata containing page information.
+        """
+        index = (page - 1) * page_size
+        return self.get_hyper_index(index, page_size)
