@@ -63,7 +63,5 @@ class Server:
         return dataset[start_index:end_index]
 
 
-# Testing the implementation
 if __name__ == "__main__":
     server = Server()
-
