@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+""" Module for index_range """
 
 
 def index_range(page, page_size):

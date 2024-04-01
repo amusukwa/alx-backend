@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+""" Module for class server """
 import csv
 import math
 from typing import List, Dict
