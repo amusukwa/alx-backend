@@ -53,7 +53,7 @@ class Server:
             List[List]: A page of the dataset.
         """
         assert isinstance(page, int) and page > 0, "must be positive integer"
-        assert isinstance(page_size, int) and page_size > 0, "must be positive integer"
+        assert isinstance(page_size, int) and page_size > 0, "must be positive"
 
         dataset = self.dataset()
         total_pages = math.ceil(len(dataset) / page_size)
