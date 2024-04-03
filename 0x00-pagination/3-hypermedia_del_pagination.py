@@ -49,8 +49,8 @@ class Server:
         Returns:
             Dict: Hypermedia metadata containing page information.
         """
-        assert index is None or (isinstance(index, int) and index >= 0), "Index must be a non-negative integer"
-        assert isinstance(page_size, int) and page_size > 0, "Page size must be a positive integer"
+        assert index is None or (isinstance(index, int) and index >= 0), " > 0"
+        assert isinstance(page_size, int) and page_size > 0, " greater than 0"
 
         dataset = self.indexed_dataset()
         total_items = len(dataset)
