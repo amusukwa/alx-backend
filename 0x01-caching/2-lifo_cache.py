@@ -3,6 +3,7 @@
 """
 from base_caching import BaseCaching
 
+
 class LIFOCache(BaseCaching):
     """ LIFOCache inherits from BaseCaching and is a caching system
     """
