@@ -20,11 +20,17 @@ babel = Babel(app)
 # Get locale function
 @babel.localeselector
 def get_locale():
+    # Check if locale parameter is present in the request URL
+    locale = request.args.get('locale')
+    if locale in app.config['LANGUAGES']:
+        return locale
+    
+    # If not present or not supported, resort to default behavior
     return request.accept_languages.best_match(app.config['LANGUAGES'])
 
 @app.route('/')
 def index():
-    return render_template('2-index.html', home_title=_('home_title'), home_header=_('home_header'))
+    return render_template('4-index.html')
 
 
 if __name__ == '__main__':
