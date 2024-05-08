@@ -1,80 +1,53 @@
 import kue from 'kue';
 
-// Define array of jobs
-const jobs = [
-  {
-    phoneNumber: '4153518780',
-    message: 'This is the code 1234 to verify your account'
-  },
-  {
-    phoneNumber: '4153518781',
-    message: 'This is the code 4562 to verify your account'
-  },
-  {
-    phoneNumber: '4153518743',
-    message: 'This is the code 4321 to verify your account'
-  },
-  {
-    phoneNumber: '4153538781',
-    message: 'This is the code 4562 to verify your account'
-  },
-  {
-    phoneNumber: '4153118782',
-    message: 'This is the code 4321 to verify your account'
-  },
-  {
-    phoneNumber: '4153718781',
-    message: 'This is the code 4562 to verify your account'
-  },
-  {
-    phoneNumber: '4159518782',
-    message: 'This is the code 4321 to verify your account'
-  },
-  {
-    phoneNumber: '4158718781',
-    message: 'This is the code 4562 to verify your account'
-  },
-  {
-    phoneNumber: '4153818782',
-    message: 'This is the code 4321 to verify your account'
-  },
-  {
-    phoneNumber: '4154318781',
-    message: 'This is the code 4562 to verify your account'
-  },
-  {
-    phoneNumber: '4151218782',
-    message: 'This is the code 4321 to verify your account'
+// Create an array for blacklisted phone numbers
+const blacklistedNumbers = ['4153518780', '4153518781'];
+
+// Create a function to send notifications
+function sendNotification(phoneNumber, message, job, done) {
+  // Track progress of the job
+  job.progress(0, 100);
+
+  // Check if phone number is blacklisted
+  if (blacklistedNumbers.includes(phoneNumber)) {
+    // Fail the job with an error
+    job.failed(new Error(`Phone number ${phoneNumber} is blacklisted`));
+    return done(new Error(`Phone number ${phoneNumber} is blacklisted`));
   }
-];
+
+  // Update progress to 50%
+  job.progress(50, 100);
+
+  // Log the notification
+  console.log(`Sending notification to ${phoneNumber}, with message: ${message}`);
+
+  // Simulate asynchronous task
+  setTimeout(() => {
+    // Mark the job as completed
+    job.complete();
+
+    // Call the callback function
+    done();
+  }, 1000); // Simulated delay of 1 second
+}
 
 // Create a job queue
-const queue = kue.createQueue();
-
-// Loop through the array of jobs
-jobs.forEach((jobData, index) => {
-  // Create a new job for each object
-  const job = queue.create('push_notification_code_2', jobData)
-    .save((err) => {
-      if (!err) {
-        console.log(`Notification job created: ${job.id}`);
-      } else {
-        console.error(`Error creating notification job: ${err}`);
-      }
-    });
-
-  // Listen for job completion event
-  job.on('complete', () => {
-    console.log(`Notification job ${job.id} completed`);
-  });
-
-  // Listen for job failure event
-  job.on('failed', (err) => {
-    console.log(`Notification job ${job.id} failed: ${err}`);
-  });
-
-  // Listen for job progress event
-  job.on('progress', (progress) => {
-    console.log(`Notification job ${job.id} ${progress}% complete`);
-  });
+const queue = kue.createQueue({
+  concurrent: 2 // Process two jobs at a time
 });
+
+// Process jobs in the queue
+queue.process('push_notification_code_2', 2, (job, done) => {
+  // Extract data from the job
+  const { phoneNumber, message } = job.data;
+  sendNotification(phoneNumber, message, job, done);
+});
+
+queue.on('ready', () => {
+  console.log('Queue is ready!');
+});
+
+queue.on('job remove', (id) => {
+  console.log(`Job ${id} has been removed from the queue`);
+});
+
